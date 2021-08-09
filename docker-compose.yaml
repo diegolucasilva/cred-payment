@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    links:
+      - mongo
+    networks:
+      - axon-compose-network
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./tmp/mongodb:/data/db
+    networks:
+      - axon-compose-network
+
+  axonserver:
+    image: axoniq/axonserver
+    hostname: axonserver
+    volumes:
+      - ./tmp/axonserver-data:/data
+      - ./tmp/axonserver-events:/eventdata
+      - ./tmp/axonserver-config:/config:ro
+    ports:
+      - '8024:8024'
+      - '8124:8124'
+      - '8224:8224'
+    networks:
+      - axon-compose-network
+
+networks:
+  axon-compose-network:
+    driver: bridge

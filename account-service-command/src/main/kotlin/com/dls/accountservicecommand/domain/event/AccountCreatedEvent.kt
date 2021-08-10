@@ -2,7 +2,7 @@ package com.dls.accountservicecommand.domain.event
 
 import java.util.*
 
-class CreateAccountEvent(
+class AccountCreatedEvent(
     val accountId: UUID,
     val customerId: String,
     val balance: Double)

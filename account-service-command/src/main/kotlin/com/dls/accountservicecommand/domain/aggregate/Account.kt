@@ -2,11 +2,11 @@ package com.dls.accountservicecommand.domain.aggregate
 
 import com.dls.accountservicecommand.adapter.`in`.command.CreateAccountCommand
 import com.dls.accountservicecommand.adapter.`in`.command.ReserveBalanceAccountCommand
-import com.dls.accountservicecommand.domain.event.CreateAccountEvent
-import com.dls.accountservicecommand.domain.event.ReserveBalanceAccountEvent
+import com.dls.accountservicecommand.domain.event.AccountCreatedEvent
+import com.dls.accountservicecommand.domain.event.AccountBalanceReservedEvent
 import com.dls.accountservicecommand.domain.exception.InsufficientBalanceException
-import com.dls.accountservicecommand.domain.mapper.toCreateAccountEvent
-import com.dls.accountservicecommand.domain.mapper.toReserveBalanceAccountEvent
+import com.dls.accountservicecommand.domain.mapper.toAccountCreatedEvent
+import com.dls.accountservicecommand.domain.mapper.toAccountBalanceReservedEvent
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
@@ -28,31 +28,31 @@ class Account(){
     @CommandHandler
     constructor(command: CreateAccountCommand) : this() {
         logger.info("CommandHandler CreateAccountCommand. Account id ${command.accountId}")
-        val event = command.toCreateAccountEvent()
+        val event = command.toAccountCreatedEvent()
         AggregateLifecycle.apply(event);
     }
 
     @CommandHandler
     fun handle(command: ReserveBalanceAccountCommand){
         logger.info("CommandHandler reserveBalanceAccountCommand. Account id ${command.accountId}")
-        val event = command.toReserveBalanceAccountEvent()
+        val event = command.toAccountBalanceReservedEvent()
         AggregateLifecycle.apply(event);
     }
 
     @EventSourcingHandler
-    fun on(reserveBalanceAccountEvent: ReserveBalanceAccountEvent) {
-        logger.info("EventSourcingHandler CreateAccountEvent to account ${reserveBalanceAccountEvent.accountId}")
-        accountId = reserveBalanceAccountEvent.accountId
-        customerId = reserveBalanceAccountEvent.customerId
-        reserveBalanceAccount(reserveBalanceAccountEvent.amount)
+    fun on(accountBalanceReservedEvent: AccountBalanceReservedEvent) {
+        logger.info("EventSourcingHandler AccountBalanceReservedEvent to account ${accountBalanceReservedEvent.accountId}")
+        accountId = accountBalanceReservedEvent.accountId
+        customerId = accountBalanceReservedEvent.customerId
+        reserveBalanceAccount(accountBalanceReservedEvent.amount)
     }
 
     @EventSourcingHandler
-    fun on(createAccountEvent: CreateAccountEvent) {
-        logger.info("EventSourcingHandler CreateAccountEvent to account ${createAccountEvent.accountId}")
-        accountId = createAccountEvent.accountId
-        customerId = createAccountEvent.customerId
-        balance = createAccountEvent.balance
+    fun on(accountCreatedEvent: AccountCreatedEvent) {
+        logger.info("EventSourcingHandler AccountCreatedEvent to account ${accountCreatedEvent.accountId}")
+        accountId = accountCreatedEvent.accountId
+        customerId = accountCreatedEvent.customerId
+        balance = accountCreatedEvent.balance
         accountStatus = AccountBalanceStatus.FREE
     }
 

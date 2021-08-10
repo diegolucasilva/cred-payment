@@ -6,6 +6,6 @@ import java.util.*
 data class ReserveBalanceAccountCommand(
     @TargetAggregateIdentifier
     val accountId: UUID,
-    val customerId: UUID,
+    val customerId: String,
     val amount: Double,
     )

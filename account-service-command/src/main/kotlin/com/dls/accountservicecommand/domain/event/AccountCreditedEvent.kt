@@ -2,6 +2,6 @@ package com.dls.accountservicecommand.domain.event
 
 import java.util.*
 
-data class AccountBalanceReservedEvent(
+class AccountCreditedEvent(
     val accountId: UUID,
     val amount: Double)

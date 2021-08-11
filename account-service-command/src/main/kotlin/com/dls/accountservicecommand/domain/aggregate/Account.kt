@@ -2,14 +2,16 @@ package com.dls.accountservicecommand.domain.aggregate
 
 import com.dls.accountservicecommand.adapter.`in`.command.CreateAccountCommand
 import com.dls.accountservicecommand.adapter.`in`.command.CreditAccountCommand
+import com.dls.accountservicecommand.adapter.`in`.command.DebitAccountCommand
 import com.dls.accountservicecommand.adapter.`in`.command.ReserveBalanceAccountCommand
 import com.dls.accountservicecommand.domain.event.AccountCreatedEvent
 import com.dls.accountservicecommand.domain.event.AccountBalanceReservedEvent
 import com.dls.accountservicecommand.domain.event.AccountCreditedEvent
+import com.dls.accountservicecommand.domain.event.AccountDebitedEvent
+import com.dls.accountservicecommand.domain.exception.AccountAlreadyReservedException
 import com.dls.accountservicecommand.domain.exception.InsufficientBalanceException
-import com.dls.accountservicecommand.domain.mapper.toAccountCreatedEvent
-import com.dls.accountservicecommand.domain.mapper.toAccountBalanceReservedEvent
-import com.dls.accountservicecommand.domain.mapper.toAccountCreditedEvent
+import com.dls.accountservicecommand.domain.mapper.*
+
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
@@ -41,10 +43,18 @@ class Account(){
         val event = command.toAccountBalanceReservedEvent()
         AggregateLifecycle.apply(event);
     }
+
     @CommandHandler
     fun handle(command: CreditAccountCommand){
         logger.info("CommandHandler CreditAccountCommand. Account id ${command.accountId}")
         val event = command.toAccountCreditedEvent()
+        AggregateLifecycle.apply(event);
+    }
+
+    @CommandHandler
+    fun handle(command: DebitAccountCommand){
+        logger.info("CommandHandler DebitAccountCommand. Account id ${command.accountId}")
+        val event = command.toAccountDebitedEvent()
         AggregateLifecycle.apply(event);
     }
 
@@ -60,8 +70,8 @@ class Account(){
     @EventSourcingHandler
     fun on(accountBalanceReservedEvent: AccountBalanceReservedEvent) {
         logger.info("EventSourcingHandler AccountBalanceReservedEvent to account ${accountBalanceReservedEvent.accountId}")
-        if(balance < accountBalanceReservedEvent.amount) throw InsufficientBalanceException(balance, accountBalanceReservedEvent.amount)
-        accountStatus = AccountBalanceStatus.RESERVED
+        (balance < accountBalanceReservedEvent.amount){ InsufficientBalanceException(balance, accountBalanceReservedEvent.amount)}
+        (accountStatus == AccountBalanceStatus.RESERVED){ AccountAlreadyReservedException(accountBalanceReservedEvent.accountId)}
     }
 
     @EventSourcingHandler
@@ -70,8 +80,18 @@ class Account(){
         balance += accountCreditedEvent.amount
     }
 
+    @EventSourcingHandler
+    fun on(accountDebitedEvent: AccountDebitedEvent){
+        logger.info("EventSourcingHandler AccountDebitedEvent to account ${accountDebitedEvent.accountId}")
+        balance -= accountDebitedEvent.amount
+        accountStatus = AccountBalanceStatus.FREE
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(Account::class.java)
     }
 
 }
+
+
+

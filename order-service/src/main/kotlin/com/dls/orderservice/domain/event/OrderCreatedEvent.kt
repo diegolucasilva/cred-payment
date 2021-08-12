@@ -6,5 +6,8 @@ data class OrderCreatedEvent(
     val orderId: UUID,
     val fromAccountId: UUID,
     val toAccountId: UUID,
-    val amount: Double
-)
+    val amount: Double,
+    val orderStatus: OrderStatus
+){
+    enum class OrderStatus{CREATED, PROCESSING, COMPLETED}
+}

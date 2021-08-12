@@ -36,7 +36,7 @@ class Order() {
         fromAccountId = orderCreatedEvent.fromAccountId
         toAccountId = orderCreatedEvent.toAccountId
         amount = orderCreatedEvent.amount
-        orderStatus = OrderStatus.CREATED
+        orderStatus = OrderStatus.valueOf(orderCreatedEvent.orderStatus.name)
     }
 
     companion object {

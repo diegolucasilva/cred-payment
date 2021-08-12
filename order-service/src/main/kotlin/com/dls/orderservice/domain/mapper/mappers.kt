@@ -5,4 +5,4 @@ import com.dls.orderservice.domain.event.OrderCreatedEvent
 
 
 fun CreateOrderCommand.toOrderCreatedEvent() =
-    OrderCreatedEvent(orderId, fromAccountId, toAccountId, amount)
+    OrderCreatedEvent(orderId, fromAccountId, toAccountId, amount, OrderCreatedEvent.OrderStatus.CREATED)

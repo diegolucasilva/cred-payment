@@ -1,4 +1,4 @@
-package com.dls.accountservicecommand.config
+package com.dls.orderservice.config
 
 import com.mongodb.ServerAddress
 import com.mongodb.client.MongoClient
@@ -27,7 +27,7 @@ class AxonConfig {
     @Value("\${spring.data.mongodb.port}")
     private val mongoPort = 0
 
-    @Value("\${spring.data.mongodb.database}")
+    @Value("\${spring.data.mongodb.database:order-events}")
     private val mongoDatabase: String? = null
 
     @Bean

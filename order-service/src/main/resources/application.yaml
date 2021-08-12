@@ -1,14 +1,16 @@
 # spring
 server:
-  port: 9080
+  port: 9081
+
 spring:
   output:
     ansi:
       enabled: ALWAYS
   application:
-    name: account-service-command
+    name: order-service
   data:
     mongodb:
       host: localhost
       port: 27017
-      database: account-events
+      database: order-events
+

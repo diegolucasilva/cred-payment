@@ -1,0 +1,13 @@
+server:
+  port: 9083
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  application:
+    name: account-service-query
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: axon-events

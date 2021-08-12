@@ -22,6 +22,27 @@ services:
     depends_on:
       - mongo
 
+  redis:
+    image: redis:alpine
+    container_name: redis_db
+    ports:
+      - 6379:6379
+    volumes:
+      - ./tmp/redis:/data/db
+    restart: always
+    networks:
+      - axon-compose-network
+
+  redisinsight:
+    container_name: redisinsight
+    image: redislabs/redisinsight
+    ports:
+      - '8001:8001'
+    depends_on:
+      - redis
+    networks:
+      - axon-compose-network
+
   axonserver:
     image: axoniq/axonserver
     container_name: axonserver

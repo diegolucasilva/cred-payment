@@ -1,0 +1,14 @@
+server:
+  port: 9084
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  application:
+    name: order-service-query
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: axon-events
+

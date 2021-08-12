@@ -9,5 +9,5 @@ class AccountEntity(
     @Id
     val accountId: UUID,
     val customerId: String,
-    val balance: Double
+    var balance: Double
 )

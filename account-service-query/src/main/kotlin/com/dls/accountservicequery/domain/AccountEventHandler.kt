@@ -1,6 +1,8 @@
 package com.dls.accountservicequery.domain
 
 import com.dls.accountservicecommand.domain.event.AccountCreatedEvent
+import com.dls.accountservicecommand.domain.event.AccountCreditedEvent
+import com.dls.accountservicecommand.domain.event.AccountDebitedEvent
 import com.dls.accountservicequery.adapter.`in`.controller.AccountResponse
 import com.dls.accountservicequery.adapter.`in`.controller.FindAccountByIdQuery
 import com.dls.accountservicequery.domain.mappers.toAccountEntity
@@ -19,6 +21,22 @@ class AccountEventHandler(private val accountRepository: AccountRepository) {
     fun on(accountCreatedEvent: AccountCreatedEvent){
         logger.info("EventHandler AccountEventHandler ${accountCreatedEvent.accountId}")
         val accountEntity = accountCreatedEvent.toAccountEntity()
+        accountRepository.save(accountEntity)
+    }
+
+    @EventHandler
+    fun on(accountDebitedEvent: AccountDebitedEvent){
+        logger.info("EventHandler AccountDebitedEvent ${accountDebitedEvent.accountId}")
+        var accountEntity = accountRepository.findById(accountDebitedEvent.accountId).get()
+        accountEntity.balance -= accountDebitedEvent.amount
+        accountRepository.save(accountEntity)
+    }
+
+    @EventHandler
+    fun on(accountCreditedEvent: AccountCreditedEvent){
+        logger.info("EventHandler AccountCreditedEvent ${accountCreditedEvent.accountId}")
+        var accountEntity = accountRepository.findById(accountCreditedEvent.accountId).get()
+        accountEntity.balance += accountCreditedEvent.amount
         accountRepository.save(accountEntity)
     }
 

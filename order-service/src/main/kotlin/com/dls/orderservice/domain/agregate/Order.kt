@@ -1,7 +1,10 @@
 package com.dls.orderservice.domain.agregate
 
+import com.dls.orderservice.adapter.`in`.command.ApproveOrderCommand
 import com.dls.orderservice.adapter.`in`.command.CreateOrderCommand
+import com.dls.orderservice.domain.event.OrderApprovedEvent
 import com.dls.orderservice.domain.event.OrderCreatedEvent
+import com.dls.orderservice.domain.mapper.toOrderApprovedEvent
 import com.dls.orderservice.domain.mapper.toOrderCreatedEvent
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -29,6 +32,13 @@ class Order() {
         AggregateLifecycle.apply(orderCreatedEvent);
     }
 
+    @CommandHandler
+    fun handle(approveOrderCommand: ApproveOrderCommand){
+        logger.info("CommandHandler ApproveOrderCommand to order ${approveOrderCommand.orderId}")
+        val orderCreatedEvent = approveOrderCommand.toOrderApprovedEvent()
+        AggregateLifecycle.apply(orderCreatedEvent);
+    }
+
     @EventSourcingHandler
     fun on(orderCreatedEvent: OrderCreatedEvent) {
         logger.info("EventSourcingHandler OrderCreatedEvent to order ${orderCreatedEvent.orderId}")
@@ -37,6 +47,16 @@ class Order() {
         toAccountId = orderCreatedEvent.toAccountId
         amount = orderCreatedEvent.amount
         orderStatus = OrderStatus.valueOf(orderCreatedEvent.orderStatus.name)
+    }
+
+    @EventSourcingHandler
+    fun on(orderApprovedEvent: OrderApprovedEvent) {
+        logger.info("EventSourcingHandler OrderApprovedEvent to order ${orderApprovedEvent.orderId}")
+        orderId = orderApprovedEvent.orderId
+        fromAccountId = orderApprovedEvent.fromAccountId
+        toAccountId = orderApprovedEvent.toAccountId
+        amount = orderApprovedEvent.amount
+        orderStatus = OrderStatus.valueOf(orderApprovedEvent.orderStatus.name)
     }
 
     companion object {

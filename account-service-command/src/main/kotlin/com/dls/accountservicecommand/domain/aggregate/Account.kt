@@ -13,6 +13,7 @@ import com.dls.accountservicecommand.domain.exception.InsufficientBalanceExcepti
 import com.dls.accountservicecommand.domain.mapper.*
 
 import org.axonframework.commandhandling.CommandHandler
+import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
@@ -25,6 +26,9 @@ import kotlin.properties.Delegates
 class Account(){
     @AggregateIdentifier
     private lateinit var accountId: UUID
+    private lateinit var toAccountId: UUID
+    private lateinit var fromAccountId: UUID
+    private lateinit var orderId: UUID
     private lateinit var customerId: String
     private var balance by Delegates.notNull<Double>()
     private lateinit var accountStatus: AccountBalanceStatus
@@ -70,14 +74,23 @@ class Account(){
     @EventSourcingHandler
     fun on(accountBalanceReservedEvent: AccountBalanceReservedEvent) {
         logger.info("EventSourcingHandler AccountBalanceReservedEvent to account ${accountBalanceReservedEvent.accountId}")
-        (balance < accountBalanceReservedEvent.amount){ InsufficientBalanceException(balance, accountBalanceReservedEvent.amount)}
-        (accountStatus == AccountBalanceStatus.RESERVED){ AccountAlreadyReservedException(accountBalanceReservedEvent.accountId)}
+     /*   if(balance < accountBalanceReservedEvent.amount){
+            throw InsufficientBalanceException(balance, accountBalanceReservedEvent.amount)
+        }
+        if(accountStatus == AccountBalanceStatus.RESERVED){
+            throw AccountAlreadyReservedException(accountBalanceReservedEvent.accountId)
+        }*/
+        orderId = accountBalanceReservedEvent.orderId
+        accountStatus = AccountBalanceStatus.RESERVED
+        toAccountId = accountBalanceReservedEvent.toAccountId
+
     }
 
     @EventSourcingHandler
     fun on(accountCreditedEvent: AccountCreditedEvent){
         logger.info("EventSourcingHandler AccountCreditedEvent to account ${accountCreditedEvent.accountId}")
         balance += accountCreditedEvent.amount
+        fromAccountId = accountCreditedEvent.fromAccountId
     }
 
     @EventSourcingHandler
@@ -85,6 +98,8 @@ class Account(){
         logger.info("EventSourcingHandler AccountDebitedEvent to account ${accountDebitedEvent.accountId}")
         balance -= accountDebitedEvent.amount
         accountStatus = AccountBalanceStatus.FREE
+        fromAccountId = accountDebitedEvent.fromAccountId
+
     }
 
     companion object {

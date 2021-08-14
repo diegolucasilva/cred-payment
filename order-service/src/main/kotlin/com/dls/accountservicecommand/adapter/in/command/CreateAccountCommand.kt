@@ -3,10 +3,8 @@ package com.dls.accountservicecommand.adapter.`in`.command
 import org.axonframework.modelling.command.TargetAggregateIdentifier
 import java.util.*
 
-data class ReserveBalanceAccountCommand(
+data class CreateAccountCommand(
     @TargetAggregateIdentifier
     val accountId: UUID,
-    val toAccountId: UUID,
-    val orderId: UUID,
-    val amount: Double,
-    )
+    val customerId: String,
+    val balance: Double)

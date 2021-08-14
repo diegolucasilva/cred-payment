@@ -4,4 +4,5 @@ import java.util.*
 
 data class AccountBalanceReservedEvent(
     val accountId: UUID,
+    val orderId: UUID,
     val amount: Double)

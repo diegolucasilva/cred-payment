@@ -12,13 +12,13 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/order")
-class OrdersCommandController(
+class OrderCommandController(
     private val commandGateway: CommandGateway,
     private val queryGateway: QueryGateway
 ) {
 
     @PostMapping
-    fun createProduct(@Valid @RequestBody createOrderRequest: CreateOrderRequest){
+    fun createProduct(@Valid @RequestBody createOrderRequest: CreateOrderRequest) {
 
         val createOrderCommand = CreateOrderCommand(
             orderId = UUID.randomUUID(),
@@ -27,7 +27,6 @@ class OrdersCommandController(
             amount = createOrderRequest.amount
         )
         commandGateway.sendAndWait<Any>(createOrderCommand)
-
 
     }
 }

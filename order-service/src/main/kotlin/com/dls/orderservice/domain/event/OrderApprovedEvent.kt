@@ -2,7 +2,7 @@ package com.dls.orderservice.domain.event
 
 import java.util.*
 
-data class OrderCreatedEvent(
+data class OrderApprovedEvent(
     val orderId: UUID,
     val fromAccountId: UUID,
     val toAccountId: UUID,

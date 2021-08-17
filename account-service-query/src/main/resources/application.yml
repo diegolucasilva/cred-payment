@@ -11,3 +11,9 @@ spring:
       host: localhost
       port: 27017
       database: axon-events
+
+axon:
+  eventhandling:
+    processors:
+      account-group:
+        mode: TRACKING

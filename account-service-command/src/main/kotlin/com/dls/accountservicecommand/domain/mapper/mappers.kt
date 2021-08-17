@@ -1,13 +1,7 @@
 package com.dls.accountservicecommand.domain.mapper
 
-import com.dls.accountservicecommand.adapter.`in`.command.CreateAccountCommand
-import com.dls.accountservicecommand.adapter.`in`.command.CreditAccountCommand
-import com.dls.accountservicecommand.adapter.`in`.command.DebitAccountCommand
-import com.dls.accountservicecommand.adapter.`in`.command.ReserveBalanceAccountCommand
-import com.dls.accountservicecommand.domain.event.AccountCreatedEvent
-import com.dls.accountservicecommand.domain.event.AccountBalanceReservedEvent
-import com.dls.accountservicecommand.domain.event.AccountCreditedEvent
-import com.dls.accountservicecommand.domain.event.AccountDebitedEvent
+import com.dls.accountservicecommand.adapter.`in`.command.*
+import com.dls.accountservicecommand.domain.event.*
 
 fun CreateAccountCommand.toAccountCreatedEvent() =
     AccountCreatedEvent(
@@ -36,3 +30,15 @@ fun DebitAccountCommand.toAccountDebitedEvent() =
         fromAccountId = fromAccountId,
         amount = amount)
 
+
+fun CancelCreditAccountCommand.toAccountCreditCancelledEvent() =
+    AccountCreditCancelledEvent(
+        accountId =accountId,
+        amount = amount,
+        reason = reason)
+
+fun CancelDebitAccountCommand.toAccountDebitCancelledEvent() =
+    AccountDebitCancelledEvent(
+        accountId =accountId,
+        amount = amount,
+        reason = reason)

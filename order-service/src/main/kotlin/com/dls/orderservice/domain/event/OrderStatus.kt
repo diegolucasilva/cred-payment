@@ -1,3 +1,3 @@
 package com.dls.orderservice.domain.event
 
-enum class OrderStatus{CREATED, PROCESSING, COMPLETED}
+enum class OrderStatus{CREATED, PROCESSING, COMPLETED, REJECTED}

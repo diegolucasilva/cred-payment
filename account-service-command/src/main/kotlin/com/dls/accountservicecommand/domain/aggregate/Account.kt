@@ -1,13 +1,7 @@
 package com.dls.accountservicecommand.domain.aggregate
 
-import com.dls.accountservicecommand.adapter.`in`.command.CreateAccountCommand
-import com.dls.accountservicecommand.adapter.`in`.command.CreditAccountCommand
-import com.dls.accountservicecommand.adapter.`in`.command.DebitAccountCommand
-import com.dls.accountservicecommand.adapter.`in`.command.ReserveBalanceAccountCommand
-import com.dls.accountservicecommand.domain.event.AccountCreatedEvent
-import com.dls.accountservicecommand.domain.event.AccountBalanceReservedEvent
-import com.dls.accountservicecommand.domain.event.AccountCreditedEvent
-import com.dls.accountservicecommand.domain.event.AccountDebitedEvent
+import com.dls.accountservicecommand.adapter.`in`.command.*
+import com.dls.accountservicecommand.domain.event.*
 import com.dls.accountservicecommand.domain.exception.AccountAlreadyReservedException
 import com.dls.accountservicecommand.domain.exception.InsufficientBalanceException
 import com.dls.accountservicecommand.domain.mapper.*
@@ -62,6 +56,20 @@ class Account(){
         AggregateLifecycle.apply(event);
     }
 
+    @CommandHandler
+    fun handle(command: CancelCreditAccountCommand){
+        logger.info("CommandHandler CancelCreditAccountCommand. Account id ${command.accountId}")
+        val event = command.toAccountCreditCancelledEvent()
+        AggregateLifecycle.apply(event);
+    }
+
+    @CommandHandler
+    fun handle(command: CancelDebitAccountCommand){
+        logger.info("CommandHandler CancelDebitAccountCommand. Account id ${command.accountId}")
+        val event = command.toAccountDebitCancelledEvent()
+        AggregateLifecycle.apply(event);
+    }
+
     @EventSourcingHandler
     fun on(accountCreatedEvent: AccountCreatedEvent) {
         logger.info("EventSourcingHandler AccountCreatedEvent to account ${accountCreatedEvent.accountId}")
@@ -74,16 +82,15 @@ class Account(){
     @EventSourcingHandler
     fun on(accountBalanceReservedEvent: AccountBalanceReservedEvent) {
         logger.info("EventSourcingHandler AccountBalanceReservedEvent to account ${accountBalanceReservedEvent.accountId}")
-     /*   if(balance < accountBalanceReservedEvent.amount){
+        if(balance < accountBalanceReservedEvent.amount){
             throw InsufficientBalanceException(balance, accountBalanceReservedEvent.amount)
         }
-        if(accountStatus == AccountBalanceStatus.RESERVED){
+         if(accountStatus == AccountBalanceStatus.RESERVED){
             throw AccountAlreadyReservedException(accountBalanceReservedEvent.accountId)
-        }*/
+        }
         orderId = accountBalanceReservedEvent.orderId
         accountStatus = AccountBalanceStatus.RESERVED
         toAccountId = accountBalanceReservedEvent.toAccountId
-
     }
 
     @EventSourcingHandler
@@ -94,12 +101,23 @@ class Account(){
     }
 
     @EventSourcingHandler
+    fun on(accountCreditCancelledEvent: AccountCreditCancelledEvent){
+        logger.info("EventSourcingHandler AccountCreditedEvent to account ${accountCreditCancelledEvent.accountId}")
+        balance -= accountCreditCancelledEvent.amount
+    }
+
+    @EventSourcingHandler
+    fun on(accountDebitCancelledEvent: AccountDebitCancelledEvent){
+        logger.info("EventSourcingHandler AccountDebitedEvent to account ${accountDebitCancelledEvent.accountId}")
+        balance += accountDebitCancelledEvent.amount
+    }
+
+    @EventSourcingHandler
     fun on(accountDebitedEvent: AccountDebitedEvent){
         logger.info("EventSourcingHandler AccountDebitedEvent to account ${accountDebitedEvent.accountId}")
         balance -= accountDebitedEvent.amount
         accountStatus = AccountBalanceStatus.FREE
         fromAccountId = accountDebitedEvent.fromAccountId
-
     }
 
     companion object {

@@ -2,6 +2,8 @@ package com.dls.accountservicecommand.config
 
 import com.mongodb.ServerAddress
 import com.mongodb.client.MongoClient
+import org.axonframework.config.EventProcessingConfigurer
+import org.axonframework.eventhandling.PropagatingErrorHandler
 import org.axonframework.eventhandling.tokenstore.TokenStore
 import org.axonframework.eventsourcing.eventstore.EmbeddedEventStore
 import org.axonframework.eventsourcing.eventstore.EventStorageEngine
@@ -14,6 +16,7 @@ import org.axonframework.extensions.mongo.eventsourcing.eventstore.MongoSettings
 import org.axonframework.extensions.mongo.eventsourcing.tokenstore.MongoTokenStore
 import org.axonframework.serialization.Serializer
 import org.axonframework.spring.config.AxonConfiguration
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -71,5 +74,10 @@ class AxonConfig {
             .storageEngine(storageEngine)
             .messageMonitor(configuration.messageMonitor(EventStore::class.java, "eventStore"))
             .build()
+    }
+
+    @Autowired
+    fun eventProcessingConfigurer(config: EventProcessingConfigurer){
+        config.registerListenerInvocationErrorHandler("account-group") { PropagatingErrorHandler.instance() }
     }
 }

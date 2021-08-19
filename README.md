@@ -10,10 +10,6 @@
 CRQS é uma padrão de arquitetura onde é segregado a responsabilidade de escrita e leitura da aplicação. 
 
 
-Query handler
-Utiliza a base 
-
-
 ### Axon framework
 O Axon é um framework que facilita a utilização do padrão CQRS com event store.
 

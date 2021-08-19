@@ -25,6 +25,7 @@ O Axon é um framework que facilita a utilização do padrão CQRS com event sto
 3. O Agregate Order, cria um OrderCreatedEvent a partir do comando CreateOrderCommand e publica o evento no event bus;
 4. O Agregate Order publica o evento no event store;
 
+![cqrs-axon](https://user-images.githubusercontent.com/13988994/129987745-0515f4e6-573a-4294-a461-ad0462001ab2.png)
 
 
 

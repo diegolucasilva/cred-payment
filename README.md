@@ -18,7 +18,7 @@ A segregação de responsabilidade entre uma aplicação que faz escrita e outra
 
 #### Desvantagens:
 Devido a consistência eventual, pode haver atraso na hora das consultas;
-A complexidade pode aumentar significamente. Na utilização de eventos, devem ser considerados tratativas eventos de compensação em caso de falhas;
+A complexidade pode aumentar significamente. Na utilização de eventos, devem ser considerados tratativas de eventos de compensação em caso de falhas.
 
 
 ### Axon framework
